@@ -44,7 +44,7 @@ if (navigator.geolocation) {
         .openPopup();
       */
 
-      map.on('click', function (mev) {
+      map.on('click', function(mev){
         let { lat, lng } = mev.latlng;
         let clickCoordsArray = [lat, lng];
         console.log(mev);
