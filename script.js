@@ -23,35 +23,22 @@ const inputDuration = document.querySelector(".form__input--duration");
 const inputCadence = document.querySelector(".form__input--cadence");
 const inputElevation = document.querySelector(".form__input--elevation");
 
+var map, mev;
+
 if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(
     function (location) {
       const { latitude, longitude } = location.coords;
       const coords = [latitude, longitude];
 
-      const map = L.map("map").setView(coords, 13);
-      console.log(map);
+      map = L.map("map").setView(coords, 13);
 
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(map);
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
-      map.on("click", function (mev) {
-        let { lat, lng } = mev.latlng;
-        let clickCoordsArray = [lat, lng];
-        console.log(mev);
-        L.marker(clickCoordsArray)
-          .addTo(map)
-          .bindPopup(
-            L.popup({
-              maxWidth: 250,
-              minWidth: 100,
-              autoClose: false,
-              className: "running-popup",
-            })
-          )
-          .openPopup();
+      map.on("click", function (mevent) {
+        mev = mevent;
+        form.classList.remove("hidden");
+        inputDistance.focus();
       });
     },
     function (params) {
@@ -59,3 +46,21 @@ if (navigator.geolocation) {
     }
   );
 }
+
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
+  let { lat, lng } = mev.latlng;
+  let clickCoordsArray = [lat, lng];
+  L.marker(clickCoordsArray)
+    .addTo(map)
+    .bindPopup(
+      L.popup({
+        maxWidth: 250,
+        minWidth: 100,
+        autoClose: false,
+        className: "running-popup",
+      })
+    )
+    .setPopupContent("emacs vim")
+    .openPopup();
+});
