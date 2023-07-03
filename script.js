@@ -47,8 +47,18 @@ if (navigator.geolocation) {
   );
 }
 
+inputType.addEventListener('change', function () {
+  // closest parent
+  inputElevation.closest('.form__row').classList.toggle('form__row--hidden');
+  inputCadence.closest('.form__row').classList.toggle('form__row--hidden');
+});
+
 form.addEventListener("submit", function (e) {
   e.preventDefault();
+
+  // clear all fields
+  inputCadence.value = inputDistance.value = inputDuration.value = inputElevation.value = '';
+
   let { lat, lng } = mev.latlng;
   let clickCoordsArray = [lat, lng];
   L.marker(clickCoordsArray)
