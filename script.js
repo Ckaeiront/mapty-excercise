@@ -23,14 +23,14 @@ const inputDuration = document.querySelector(".form__input--duration");
 const inputCadence = document.querySelector(".form__input--cadence");
 const inputElevation = document.querySelector(".form__input--elevation");
 
-// var map, mev;
+var map, mev;
 
 class App {
   #map;
   #mev;
   constructor() {
     this._getCurrentLocation();
-    this._showForm();
+    form.addEventListener("submit", this._newWorkout.bind(this));
   }
 
   _getCurrentLocation() {
@@ -44,17 +44,17 @@ class App {
   _loadMap(location) {
     console.log(location);
     const { latitude, longitude } = location.coords;
-    const coords = [latitude, longitude];
+    const coords = [latitude, longitude];    
     this.#map = L.map("map").setView(coords, 13);
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(this.#map);
+    
+    this.#map.on("click", this._showForm.bind(this));
   }
 
-  _showForm() {
-    this.#map.on("click", function (mevent) {
-      this.#mev = mevent;
-      form.classList.remove("hidden");
-      inputDistance.focus();
-    });
+  _showForm(mevent) {
+    this.#mev = mevent;
+    form.classList.remove("hidden");
+    inputDistance.focus();
   }
 
   _toggleElevationView() {
@@ -68,36 +68,34 @@ class App {
     });
   }
 
-  _newWorkout() {}
+  _newWorkout(e) {
+    e.preventDefault();
+
+    // clear all fields
+    inputCadence.value =
+      inputDistance.value =
+      inputDuration.value =
+      inputElevation.value =
+        "";
+  
+    let { lat, lng } = this.#mev.latlng;
+    let clickCoordsArray = [lat, lng];
+    L.marker(clickCoordsArray)
+      .addTo(this.#map)
+      .bindPopup(
+        L.popup({
+          maxWidth: 250,
+          minWidth: 100,
+          autoClose: false,
+          className: "running-popup",
+        })
+      )
+      .setPopupContent("emacs vim")
+      .openPopup();
+  }
 }
 
 const app = new App();
-
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  // clear all fields
-  inputCadence.value =
-    inputDistance.value =
-    inputDuration.value =
-    inputElevation.value =
-      "";
-
-  let { lat, lng } = mev.latlng;
-  let clickCoordsArray = [lat, lng];
-  L.marker(clickCoordsArray)
-    .addTo(map)
-    .bindPopup(
-      L.popup({
-        maxWidth: 250,
-        minWidth: 100,
-        autoClose: false,
-        className: "running-popup",
-      })
-    )
-    .setPopupContent("emacs vim")
-    .openPopup();
-});
 
 class Workout {
   constructor() {}
