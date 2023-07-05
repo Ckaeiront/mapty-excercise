@@ -23,7 +23,30 @@ const inputDuration = document.querySelector(".form__input--duration");
 const inputCadence = document.querySelector(".form__input--cadence");
 const inputElevation = document.querySelector(".form__input--elevation");
 
-var map, mev;
+class Workout {
+  date = new Date();
+  id = (new Date() + '').slice(-10);
+
+  constructor(distance, duration, coords) {
+    this.distance = distance; // in km
+    this.duration = duration; // in min
+    this.coords = coords;
+  }
+}
+
+class Running extends Workout {
+  constructor(distance, duration, coords, cadence) {
+    super(distance, duration, coords);
+    this.cadence = cadence;
+  }
+}
+
+class Cycling extends Workout {
+  constructor(distance, duration, coords, elevationGain) {
+    super(distance, duration, coords);
+    this.elevationGain = elevationGain;
+  }
+}
 
 class App {
   #map;
@@ -31,23 +54,29 @@ class App {
   constructor() {
     this._getCurrentLocation();
     form.addEventListener("submit", this._newWorkout.bind(this));
+    inputType.addEventListener("change", this._toggleElevationView.bind(this));
   }
 
   _getCurrentLocation() {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(this._loadMap.bind(this), function () {
-        return alert('could not get your location');
-      });
+      navigator.geolocation.getCurrentPosition(
+        this._loadMap.bind(this),
+        function () {
+          return alert("could not get your location");
+        }
+      );
     }
   }
 
   _loadMap(location) {
     console.log(location);
     const { latitude, longitude } = location.coords;
-    const coords = [latitude, longitude];    
+    const coords = [latitude, longitude];
     this.#map = L.map("map").setView(coords, 13);
-    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(this.#map);
-    
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(
+      this.#map
+    );
+
     this.#map.on("click", this._showForm.bind(this));
   }
 
@@ -58,14 +87,9 @@ class App {
   }
 
   _toggleElevationView() {
-    inputType.addEventListener("change", function () {
-      // closest parent
-      inputElevation
-        .closest(".form__row")
-        .classList.toggle("form__row--hidden");
-      input
-      Cadence.closest(".form__row").classList.toggle("form__row--hidden");
-    });
+    // closest parent
+    inputElevation.closest(".form__row").classList.toggle("form__row--hidden");
+    Cadence.closest(".form__row").classList.toggle("form__row--hidden");
   }
 
   _newWorkout(e) {
@@ -77,7 +101,7 @@ class App {
       inputDuration.value =
       inputElevation.value =
         "";
-  
+
     let { lat, lng } = this.#mev.latlng;
     let clickCoordsArray = [lat, lng];
     L.marker(clickCoordsArray)
@@ -96,11 +120,3 @@ class App {
 }
 
 const app = new App();
-
-class Workout {
-  constructor() {}
-}
-
-class Running extends Workout {}
-
-class Cycling extends Workout {}
