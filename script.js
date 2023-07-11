@@ -42,7 +42,6 @@ class Running extends Workout {
   }
 
   calcPace() {
-  
     return this.pace;
   }
 }
@@ -59,6 +58,11 @@ class Cycling extends Workout {
     return this.speed;
   }
 }
+
+// const run1 = new Running([39, -12], 5.2, 24, 178);
+// const cycling1 = new Cycling([39, -13], 5.3, 32, 523);
+
+// console.log(run1, cycling1);
 
 class App {
   #map;
